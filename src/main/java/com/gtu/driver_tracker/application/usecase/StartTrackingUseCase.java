@@ -17,7 +17,7 @@ public class StartTrackingUseCase {
         this.driverVerificationPort = driverVerificationPort;
     }
 
-    public void execute(Long driverId) {
+    public TrackingSession execute(Long driverId) {
         var driver = driverVerificationPort.getDriverById(driverId);
         if (driver == null) {
             throw new HttpException(404, "Driver "+ driverId + " not found");
@@ -25,6 +25,8 @@ public class StartTrackingUseCase {
         if (trackingSessionPort.isTracking(driverId)) {
             throw new HttpException(409, "Driver "+ driverId + " is already being tracked");
         }
-        trackingSessionPort.startTrackingSession(new TrackingSession(driver));
+        var trackingSession = new TrackingSession(driver);
+        trackingSessionPort.startTrackingSession(trackingSession);
+        return trackingSession;
     }
 }
