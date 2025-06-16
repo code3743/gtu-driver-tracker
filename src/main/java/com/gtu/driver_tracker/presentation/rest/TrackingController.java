@@ -9,7 +9,7 @@ import com.gtu.driver_tracker.application.usecase.StartTrackingUseCase;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -24,8 +24,8 @@ public class TrackingController {
     }
 
 
-    @GetMapping("/start/${id}")
-    public ResponseDTO<String> startTracking(@RequestParam Long id) {
+    @GetMapping("/start/{id}")
+    public ResponseDTO<String> startTracking(@PathVariable("id") Long id) {
         startTrackingUseCase.execute(id);
         return new ResponseDTO<>("Tracking started for driver ID: " + id, null, 200);
     }

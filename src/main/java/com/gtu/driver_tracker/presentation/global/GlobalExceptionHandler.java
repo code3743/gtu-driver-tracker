@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.gtu.driver_tracker.application.dto.ErrorResponseDTO;
-import com.gtu.driver_tracker.domain.exception.ResourceNotFoundException;
+import com.gtu.driver_tracker.domain.exception.HttpException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -29,15 +29,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler(HttpException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHttpException(HttpException ex, HttpServletRequest request) {
         ErrorResponseDTO response = new ErrorResponseDTO(
-            HttpStatus.NOT_FOUND.value(),
-            "Not Found",
+            ex.getStatusCode(),
+            HttpStatus.valueOf(ex.getStatusCode()).getReasonPhrase(),
             ex.getMessage(),
             request.getRequestURI()
         );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getStatusCode()));
     }
 
     

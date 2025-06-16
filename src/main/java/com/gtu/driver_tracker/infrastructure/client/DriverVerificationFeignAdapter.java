@@ -1,9 +1,12 @@
 package com.gtu.driver_tracker.infrastructure.client;
 
-import com.gtu.driver_tracker.domain.service.DriverVerificationPort;
 
 
-public class DriverVerificationFeignAdapter implements DriverVerificationPort {
+import com.gtu.driver_tracker.domain.model.Driver;
+import com.gtu.driver_tracker.domain.service.DriverIdentityPort;
+
+
+public class DriverVerificationFeignAdapter implements DriverIdentityPort {
 
     private final DriverServiceClient client;
 
@@ -13,13 +16,18 @@ public class DriverVerificationFeignAdapter implements DriverVerificationPort {
 
 
 
+
+
     @Override
-    public boolean verifyDriver(Long driverId) {
+    public Driver getDriverById(Long driverId) {
         try {
-            DriverServiceClient.UserResponse user = client.getUserById(driverId);
-            return user != null && "DRIVER".equalsIgnoreCase(user.getRole());
+            var user = client.getUserById(driverId);
+            if (user != null && "DRIVER".equalsIgnoreCase(user.data().role())) {
+                return new Driver(user.data().id(), user.data().name());
+            }
         } catch (Exception e) {
-            return false;
+           e.printStackTrace();
         }
+        return null;
     }
 }

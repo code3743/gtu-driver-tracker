@@ -1,6 +1,8 @@
 package com.gtu.driver_tracker.domain.service;
 
 
+import java.util.List;
+
 import com.gtu.driver_tracker.domain.model.TrackingSession;
 
 public interface  TrackingSessionPort {
@@ -11,7 +13,7 @@ public interface  TrackingSessionPort {
      * @param driverId the ID of the driver
      * @return the ID of the newly created tracking session
      */
-    void startTrackingSession(Long driverId);
+    void startTrackingSession(TrackingSession trackingSession);
 
     /**
      * Ends the tracking session for the given driver.
@@ -36,4 +38,12 @@ public interface  TrackingSessionPort {
      * @return true if the driver is being tracked, false otherwise
      */
     boolean isTracking(Long driverId);
+
+
+    /**
+     * Retrieves all tracking sessions.
+     *
+     * @return a list of all tracking sessions
+     */
+    List<TrackingSession> getAllTrackingSessions();
 }

@@ -11,15 +11,21 @@ import java.time.Instant;
  */
 public class TrackingSession {
     private Long sessionId;
+    private String driverName;
     private Instant creationTime;
 
-    public TrackingSession(Long driverId) {
-        this.sessionId = driverId;
+    public TrackingSession(Driver driver) {
+        this.sessionId = driver.getId();
+        this.driverName = driver.getName();
         this.creationTime = Instant.now();
     }
 
     public Long getSessionId() {
         return sessionId;
+    }
+
+    public String getDriverName() {
+        return driverName;
     }
 
 

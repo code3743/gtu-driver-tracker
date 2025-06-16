@@ -1,0 +1,14 @@
+services:
+  gtu-driver-tracker:
+    build: .
+    container_name: gtu-driver-tracker
+    environment:
+      - EUREKA_SERVER_HOST=discovery-server
+      - EUREKA_SERVER_PORT=8761
+      - SERVER_PORT=0
+      - SWAGGER_SERVER_URL=${SWAGGER_SERVER_URL}
+    networks:
+      - shared_network
+networks:
+  shared_network:
+    external: true
