@@ -1,6 +1,7 @@
 package com.gtu.driver_tracker.infrastructure.client;
 
 
+import java.util.logging.Logger;
 
 import com.gtu.driver_tracker.domain.model.Driver;
 import com.gtu.driver_tracker.domain.service.DriverIdentityPort;
@@ -9,14 +10,11 @@ import com.gtu.driver_tracker.domain.service.DriverIdentityPort;
 public class DriverVerificationFeignAdapter implements DriverIdentityPort {
 
     private final DriverServiceClient client;
+    private final Logger log = Logger.getLogger(DriverVerificationFeignAdapter.class.getName());
 
     public DriverVerificationFeignAdapter(DriverServiceClient client) {
         this.client = client;
     }
-
-
-
-
 
     @Override
     public Driver getDriverById(Long driverId) {
@@ -26,7 +24,7 @@ public class DriverVerificationFeignAdapter implements DriverIdentityPort {
                 return new Driver(user.data().id(), user.data().name());
             }
         } catch (Exception e) {
-           e.printStackTrace();
+            log.info("Error fetching driver by ID: " + driverId);
         }
         return null;
     }
