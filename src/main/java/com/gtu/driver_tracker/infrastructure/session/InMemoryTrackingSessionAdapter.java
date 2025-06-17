@@ -23,8 +23,8 @@ public class  InMemoryTrackingSessionAdapter  implements TrackingSessionPort {
    }
 
     @Override
-    public TrackingSession getTrackingSessionById(Long sessionId) {
-       return sessions.get(sessionId);
+    public TrackingSession getTrackingSessionById(Long driverId) {
+       return sessions.get(driverId);
     }
 
     @Override
