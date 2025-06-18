@@ -1,6 +1,7 @@
 package com.gtu.driver_tracker.domain.model;
 
 import java.time.Instant;
+import java.util.UUID;
 /**
  * Represents a driver entity with an identifier and a name.
  * <p>
@@ -10,24 +11,29 @@ import java.time.Instant;
  * </p>
  */
 public class TrackingSession {
-    private Long sessionId;
+    private Long driverId; 
+    private UUID sessionId;
     private String driverName;
     private Instant creationTime;
 
     public TrackingSession(Driver driver) {
-        this.sessionId = driver.getId();
+        this.driverId = driver.getId();
         this.driverName = driver.getName();
         this.creationTime = Instant.now();
+        this.sessionId = UUID.randomUUID();
     }
 
-    public Long getSessionId() {
-        return sessionId;
+    public Long getDriverId() {
+        return driverId;
     }
 
     public String getDriverName() {
         return driverName;
     }
 
+    public UUID getSessionId() {
+        return sessionId;
+    }
 
     public Instant getCreationTime() {
         return creationTime;

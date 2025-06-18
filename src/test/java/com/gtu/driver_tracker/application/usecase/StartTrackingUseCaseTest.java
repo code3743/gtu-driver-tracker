@@ -36,7 +36,7 @@ class StartTrackingUseCaseTest {
         TrackingSession session = useCase.execute(driverId);
 
         assertNotNull(session);
-        assertEquals(driverId, session.getSessionId());
+        assertEquals(driverId, session.getDriverId());
         verify(trackingSessionPort).startTrackingSession(session);
     }
 

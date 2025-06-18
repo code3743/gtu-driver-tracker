@@ -19,7 +19,7 @@ class TrackingSessionTest {
         TrackingSession session = new TrackingSession(mockDriver);
         Instant after = Instant.now();
 
-        assertEquals(123L, session.getSessionId());
+        assertEquals(123L, session.getDriverId());
         assertEquals("John Doe", session.getDriverName());
         assertNotNull(session.getCreationTime());
         assertFalse(session.getCreationTime().isBefore(before));
@@ -33,7 +33,7 @@ class TrackingSessionTest {
         when(mockDriver.getName()).thenReturn("Jane Smith");
 
         TrackingSession session = new TrackingSession(mockDriver);
-        assertEquals(456L, session.getSessionId());
+        assertEquals(456L, session.getDriverId());
     }
 
     @Test
