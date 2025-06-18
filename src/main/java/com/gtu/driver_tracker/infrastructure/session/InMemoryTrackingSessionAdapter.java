@@ -14,7 +14,7 @@ public class  InMemoryTrackingSessionAdapter  implements TrackingSessionPort {
 
     @Override
     public void startTrackingSession(TrackingSession trackingSession) {
-        sessions.put(trackingSession.getSessionId(), trackingSession);
+        sessions.put(trackingSession.getDriverId(), trackingSession);
     }
 
     @Override
