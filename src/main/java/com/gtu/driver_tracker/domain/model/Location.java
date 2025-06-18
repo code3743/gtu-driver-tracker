@@ -1,5 +1,6 @@
 package com.gtu.driver_tracker.domain.model;
 
+import java.time.Instant;
 /**
  * Represents a geographical location with latitude and longitude coordinates.
  * <p>
@@ -16,10 +17,12 @@ package com.gtu.driver_tracker.domain.model;
 public class Location {
     private double latitude;
     private double longitude;
+    private Instant timestamp;
 
-    public Location(double latitude, double longitude) {
+    public Location(double latitude, double longitude, Instant timestamp) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.timestamp = timestamp;
     }
 
     public double getLatitude() {
@@ -36,8 +39,11 @@ public class Location {
         this.longitude = longitude;
     }
 
-   @Override
-    public String toString() {
-        return "latitude=" + latitude + ", longitude=" + longitude;
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
     }
 }
