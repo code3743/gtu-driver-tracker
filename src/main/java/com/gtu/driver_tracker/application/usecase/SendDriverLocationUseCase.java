@@ -2,49 +2,32 @@ package com.gtu.driver_tracker.application.usecase;
 
 import java.util.UUID;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-
-import com.gtu.driver_tracker.application.dto.DriverLocationDTO;
 import com.gtu.driver_tracker.application.dto.LocationMessageDTO;
 import com.gtu.driver_tracker.application.mapper.LocationMapper;
-import com.gtu.driver_tracker.domain.repository.DriverLocationRepository;
-import com.gtu.driver_tracker.domain.repository.TrackingSessionRepository;
-import com.gtu.driver_tracker.utils.GpsUtils;
+import com.gtu.driver_tracker.domain.exception.GeneralException;
+import com.gtu.driver_tracker.domain.service.LocationService;
 
 @Component
 public class SendDriverLocationUseCase {
 
-    private final TrackingSessionRepository sessionPort;
-  
-    private final DriverLocationRepository driverLocationRepository;
+    private final LocationService locationService;
 
-    public SendDriverLocationUseCase(TrackingSessionRepository sessionPort, DriverLocationRepository driverLocationRepository) {
-        this.sessionPort = sessionPort;
-        this.driverLocationRepository = driverLocationRepository;
+    public SendDriverLocationUseCase(LocationService locationService) {
+        this.locationService = locationService;
     }
 
-    public void execute(Long driverId, UUID sessionId, LocationMessageDTO dto, SimpMessagingTemplate messagingTemplate) {
-      
-        
-        var session = sessionPort.getTrackingSessionById(driverId);
-        
-        if (!isValidSession(driverId, sessionId)) {
-            throw new IllegalArgumentException("Invalid session for driver " + driverId);
+    public void execute(Long driverId, String sessionId, LocationMessageDTO dto) {
+        try {
+            locationService.notifyDriverLocationChange(driverId, UUID.fromString(sessionId), LocationMapper.toDomain(dto));
+            locationService.updateLocation(driverId, dto.getLatitude(), dto.getLongitude());
+        } catch (IllegalArgumentException  e) {
+            locationService.notifyDriverError(driverId, new GeneralException(400, "Invalid input: " + e.getMessage()));
+        } catch (GeneralException e) {
+            locationService.notifyDriverError(driverId, e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        var location = LocationMapper.toDomain(dto);
-        var lastLocation = driverLocationRepository.getLocationByDriverId(driverId);
-        var lastUpdateTime = driverLocationRepository.getLastUpdateTimeByDriverId(driverId);
-
-        double speed = lastLocation != null ? GpsUtils.calculateSpeed(lastUpdateTime, lastLocation.getLatitude(), lastLocation.getLongitude(), location.getLatitude(), location.getLongitude()) : 0;
-        driverLocationRepository.saveLocation(driverId, location);
-        var driverLocation = new DriverLocationDTO(driverId, session.getDriverName(), location, speed);
-        messagingTemplate.convertAndSend("/topic/tracking/drivers", driverLocation);
     }
 
-    private boolean isValidSession(Long driverId, UUID sessionId) {
-        var session = sessionPort.getTrackingSessionById(driverId);
-        return session != null && session.getSessionId().equals(sessionId) && sessionPort.isTracking(driverId) && session.getDriverId().equals(driverId);
-    }
 }
