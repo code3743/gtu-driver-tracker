@@ -2,39 +2,32 @@ package com.gtu.driver_tracker.application.usecase;
 
 import java.util.UUID;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-
-import com.gtu.driver_tracker.application.dto.DriverLocationDTO;
 import com.gtu.driver_tracker.application.dto.LocationMessageDTO;
 import com.gtu.driver_tracker.application.mapper.LocationMapper;
-import com.gtu.driver_tracker.domain.service.TrackingSessionPort;
+import com.gtu.driver_tracker.domain.exception.GeneralException;
+import com.gtu.driver_tracker.domain.service.LocationService;
 
 @Component
 public class SendDriverLocationUseCase {
 
-    private final TrackingSessionPort sessionPort;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final LocationService locationService;
 
-    public SendDriverLocationUseCase(TrackingSessionPort sessionPort, SimpMessagingTemplate messagingTemplate) {
-        this.sessionPort = sessionPort;
-        this.messagingTemplate = messagingTemplate;
+    public SendDriverLocationUseCase(LocationService locationService) {
+        this.locationService = locationService;
     }
 
-    public void execute(Long driverId, UUID sessionId, LocationMessageDTO dto) {
-        var session = sessionPort.getTrackingSessionById(driverId);
-        
-        if (!isValidSession(driverId, sessionId)) {
-            return;
+    public void execute(Long driverId, String sessionId, LocationMessageDTO dto) {
+        try {
+            locationService.notifyDriverLocationChange(driverId, UUID.fromString(sessionId), LocationMapper.toDomain(dto));
+            locationService.updateLocation(driverId, dto.getLatitude(), dto.getLongitude());
+        } catch (IllegalArgumentException  e) {
+            locationService.notifyDriverError(driverId, new GeneralException(400, "Invalid input: " + e.getMessage()));
+        } catch (GeneralException e) {
+            locationService.notifyDriverError(driverId, e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        var location = LocationMapper.toDomain(dto);
-        var driverLocation = new DriverLocationDTO(driverId, session.getDriverName(), location);
-        messagingTemplate.convertAndSend("/topic/tracking/drivers", driverLocation);
     }
 
-    private boolean isValidSession(Long driverId, UUID sessionId) {
-        var session = sessionPort.getTrackingSessionById(driverId);
-        return session != null && session.getSessionId().equals(sessionId) && sessionPort.isTracking(driverId) && session.getDriverId().equals(driverId);
-    }
 }

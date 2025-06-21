@@ -1,11 +1,11 @@
-package com.gtu.driver_tracker.domain.service;
+package com.gtu.driver_tracker.domain.repository;
 
 
 import java.util.List;
 
 import com.gtu.driver_tracker.domain.model.TrackingSession;
 
-public interface  TrackingSessionPort {
+public interface  TrackingSessionRepository {
 
     /**
      * Starts a new tracking session for the given driver.
@@ -46,4 +46,5 @@ public interface  TrackingSessionPort {
      * @return a list of all tracking sessions
      */
     List<TrackingSession> getAllTrackingSessions();
+
 }

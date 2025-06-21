@@ -1,10 +1,10 @@
 package com.gtu.driver_tracker.application.usecase;
 
-import com.gtu.driver_tracker.domain.exception.HttpException;
+import com.gtu.driver_tracker.domain.exception.GeneralException;
 import com.gtu.driver_tracker.domain.model.Driver;
 import com.gtu.driver_tracker.domain.model.TrackingSession;
+import com.gtu.driver_tracker.domain.repository.TrackingSessionRepository;
 import com.gtu.driver_tracker.domain.service.DriverIdentityPort;
-import com.gtu.driver_tracker.domain.service.TrackingSessionPort;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,13 @@ import static org.mockito.Mockito.*;
 
 class StartTrackingUseCaseTest {
 
-    private TrackingSessionPort trackingSessionPort;
+    private TrackingSessionRepository trackingSessionPort;
     private DriverIdentityPort driverIdentityPort;
     private StartTrackingUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        trackingSessionPort = mock(TrackingSessionPort.class);
+        trackingSessionPort = mock(TrackingSessionRepository.class);
         driverIdentityPort = mock(DriverIdentityPort.class);
         useCase = new StartTrackingUseCase(trackingSessionPort, driverIdentityPort);
     }
@@ -45,7 +45,7 @@ class StartTrackingUseCaseTest {
         Long driverId = 2L;
         when(driverIdentityPort.getDriverById(driverId)).thenReturn(null);
 
-        HttpException exception = assertThrows(HttpException.class, () -> useCase.execute(driverId));
+        GeneralException exception = assertThrows(GeneralException.class, () -> useCase.execute(driverId));
         assertEquals(404, exception.getStatusCode());
         assertTrue(exception.getMessage().contains("not found"));
     }
@@ -58,7 +58,7 @@ class StartTrackingUseCaseTest {
         when(driverIdentityPort.getDriverById(driverId)).thenReturn(driver);
         when(trackingSessionPort.isTracking(driverId)).thenReturn(true);
 
-        HttpException exception = assertThrows(HttpException.class, () -> useCase.execute(driverId));
+        GeneralException exception = assertThrows(GeneralException.class, () -> useCase.execute(driverId));
         assertEquals(409, exception.getStatusCode());
         assertTrue(exception.getMessage().contains("already being tracked"));
     }
