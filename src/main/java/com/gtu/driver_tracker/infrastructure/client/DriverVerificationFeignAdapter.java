@@ -3,10 +3,12 @@ package com.gtu.driver_tracker.infrastructure.client;
 
 import java.util.logging.Logger;
 
+import org.springframework.stereotype.Service;
+
 import com.gtu.driver_tracker.domain.model.Driver;
 import com.gtu.driver_tracker.domain.service.DriverIdentityPort;
 
-
+@Service
 public class DriverVerificationFeignAdapter implements DriverIdentityPort {
 
     private final DriverServiceClient client;
