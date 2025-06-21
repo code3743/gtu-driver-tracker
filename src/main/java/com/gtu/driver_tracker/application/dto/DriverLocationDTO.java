@@ -13,4 +13,5 @@ public class DriverLocationDTO {
     private Long driverId;
     private String driverName;
     private Location location;
+    private Double speed;
 }
