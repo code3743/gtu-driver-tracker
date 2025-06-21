@@ -1,7 +1,7 @@
 package com.gtu.driver_tracker.application.usecase;
 
-import com.gtu.driver_tracker.domain.exception.HttpException;
-import com.gtu.driver_tracker.domain.service.TrackingSessionPort;
+import com.gtu.driver_tracker.domain.exception.GeneralException;
+import com.gtu.driver_tracker.domain.repository.TrackingSessionRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,12 +11,12 @@ import static org.mockito.Mockito.*;
 
 class StopTrackingUseCaseTest {
 
-    private TrackingSessionPort trackingSessionPort;
+    private TrackingSessionRepository trackingSessionPort;
     private StopTrackingUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        trackingSessionPort = mock(TrackingSessionPort.class);
+        trackingSessionPort = mock(TrackingSessionRepository.class);
         useCase = new StopTrackingUseCase(trackingSessionPort);
     }
 
@@ -35,7 +35,7 @@ class StopTrackingUseCaseTest {
         Long driverId = 2L;
         when(trackingSessionPort.isTracking(driverId)).thenReturn(false);
 
-        HttpException exception = assertThrows(HttpException.class, () -> useCase.execute(driverId));
+        GeneralException exception = assertThrows(GeneralException.class, () -> useCase.execute(driverId));
         assertEquals(404, exception.getStatusCode());
         assertTrue(exception.getMessage().contains("not being tracked"));
     }
