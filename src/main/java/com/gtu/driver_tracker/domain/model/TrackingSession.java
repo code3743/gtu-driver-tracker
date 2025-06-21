@@ -16,6 +16,7 @@ public class TrackingSession {
     private String driverName;
     private Instant creationTime;
 
+
     public TrackingSession(Driver driver) {
         this.driverId = driver.getId();
         this.driverName = driver.getName();

@@ -1,10 +1,10 @@
 package com.gtu.driver_tracker.domain.exception;
 
-public class HttpException extends RuntimeException {
+public class GeneralException extends RuntimeException {
     private final int statusCode;
     private final String message;
 
-    public HttpException(int statusCode, String message) {
+    public GeneralException(int statusCode, String message) {
         super(message);
         this.statusCode = statusCode;
         this.message = message;
