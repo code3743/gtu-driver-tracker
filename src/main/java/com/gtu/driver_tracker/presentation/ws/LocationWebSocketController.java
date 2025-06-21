@@ -30,20 +30,16 @@ public class LocationWebSocketController {
        try {
          sendLocationUseCase.execute(driverId, UUID.fromString(sessionId), locationMessage, messagingTemplate);
        } catch (GeneralException e) {
-            System.out.println(e.getMessage());
-            // Send the error message to the user
          messagingTemplate.convertAndSend(
                 "/topic/errors/" + driverId,
                 e
             );
        }
        catch (Exception e) {
-        System.out.println(e.getMessage());
         messagingTemplate.convertAndSend(
                 "/topic/errors/" + driverId,
                 new GeneralException(500, "An unexpected error occurred: " + e.getMessage())
             );
-
        }
     }
 }
