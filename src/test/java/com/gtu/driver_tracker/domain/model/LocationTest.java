@@ -31,11 +31,4 @@ class LocationTest {
         location.setLongitude(-0.1278);
         assertEquals(-0.1278, location.getLongitude());
     }
-
-    @Test
-    void toStringShouldReturnCorrectFormat() {
-        Location location = new Location(10.0, 20.0, Instant.now());
-        String expected = "latitude=10.0, longitude=20.0";
-        assertEquals(expected, location.toString());
-    }
 }

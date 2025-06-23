@@ -1,8 +1,7 @@
-package com.gtu.driver_tracker.infrastructure.session;
+package com.gtu.driver_tracker.infrastructure.repository;
 
 import com.gtu.driver_tracker.domain.model.Driver;
 import com.gtu.driver_tracker.domain.model.TrackingSession;
-import com.gtu.driver_tracker.infrastructure.repository.InMemoryTrackingSessionAdapter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
