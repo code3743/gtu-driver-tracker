@@ -1,6 +1,5 @@
 package com.gtu.driver_tracker.presentation.rest;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/tracking")
 @Tag(name = "Tracking", description = "Endpoints for managing tracking sessions")
-@CrossOrigin(origins = "*")
 public class TrackingController {
 
     final StartTrackingUseCase startTrackingUseCase;
