@@ -40,7 +40,7 @@ public class LogPublisher {
             amqpTemplate.convertAndSend(exchange, routingKey, logJson);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to send log message", e);
         }
     }
 
