@@ -21,7 +21,10 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @Autowired LogPublisher logPublisher;
+    private final LogPublisher logPublisher;
+    public GlobalExceptionHandler(LogPublisher logPublisher) {
+        this.logPublisher = logPublisher;
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {

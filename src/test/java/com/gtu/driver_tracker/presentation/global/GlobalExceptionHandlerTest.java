@@ -27,9 +27,8 @@ class GlobalExceptionHandlerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new GlobalExceptionHandler();
         logPublisher = mock(LogPublisher.class);
-        handler.logPublisher = logPublisher;
+        handler = new GlobalExceptionHandler(logPublisher);
         request = mock(HttpServletRequest.class);
         when(request.getRequestURI()).thenReturn("/test-uri");
     }

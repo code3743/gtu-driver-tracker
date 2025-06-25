@@ -9,6 +9,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +60,9 @@ class LogPublisherTest {
         Map<String, Object> details = Map.of("error", "details");
 
         // Act
-        logPublisher.sendLog(timestamp, service, level, message, details);
+        assertThrows(RuntimeException.class, () -> {
+            logPublisher.sendLog(timestamp, service, level, message, details);
+        });
 
         // Assert
         verify(amqpTemplate, times(1)).convertAndSend(eq("log.exchange"), eq("log.routingkey"), anyString());
