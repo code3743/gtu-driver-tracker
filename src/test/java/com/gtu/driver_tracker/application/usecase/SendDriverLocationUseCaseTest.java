@@ -3,11 +3,18 @@ package com.gtu.driver_tracker.application.usecase;
 import com.gtu.driver_tracker.application.dto.LocationMessageDTO;
 import com.gtu.driver_tracker.domain.exception.GeneralException;
 import com.gtu.driver_tracker.domain.service.LocationService;
+import com.gtu.driver_tracker.infrastructure.logs.LogPublisher;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -18,11 +25,13 @@ class SendDriverLocationUseCaseTest {
 
     private LocationService locationService;
     private SendDriverLocationUseCase useCase;
+    private LogPublisher logPublisher;
 
     @BeforeEach
     void setUp() {
         locationService = mock(LocationService.class);
-        useCase = new SendDriverLocationUseCase(locationService);
+        logPublisher = mock(LogPublisher.class);
+        useCase = new SendDriverLocationUseCase(locationService, logPublisher);
     }
 
     @Test
@@ -38,6 +47,7 @@ class SendDriverLocationUseCaseTest {
         verify(locationService).notifyDriverLocationChange(eq(driverId), eq(UUID.fromString(sessionId)), any());
         verify(locationService).updateLocation(driverId, dto.getLatitude(), dto.getLongitude());
         verify(locationService, never()).notifyDriverError(anyLong(), any());
+        verify(logPublisher, never()).sendLog(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -50,6 +60,7 @@ class SendDriverLocationUseCaseTest {
 
         ArgumentCaptor<GeneralException> captor = ArgumentCaptor.forClass(GeneralException.class);
         verify(locationService).notifyDriverError(eq(driverId), captor.capture());
+        verify(logPublisher, never()).sendLog(any(), any(), any(), any(), any());
         assertEquals(400, captor.getValue().getStatusCode());
         assertTrue(captor.getValue().getMessage().contains("Invalid input"));
     }
@@ -66,6 +77,7 @@ class SendDriverLocationUseCaseTest {
         useCase.execute(driverId, sessionId, dto);
 
         verify(locationService).notifyDriverError(eq(driverId), any(GeneralException.class));
+        verify(logPublisher, never()).sendLog(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -80,5 +92,7 @@ class SendDriverLocationUseCaseTest {
         // No exception should be thrown out of execute
         assertDoesNotThrow(() -> useCase.execute(driverId, sessionId, dto));
         verify(locationService, never()).notifyDriverError(eq(driverId), any(GeneralException.class));
+        verify(logPublisher).sendLog(anyString(), eq("driver-tracker-service"), eq("ERROR"),
+                eq("Error sending driver location"), anyMap());
     }
 }
