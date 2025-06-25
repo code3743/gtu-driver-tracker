@@ -50,8 +50,7 @@ class LogPublisherTest {
     @Test
     void testSendLogFailure() {
         // Arrange
-        doThrow(new RuntimeException("Test exception")).when(amqpTemplate).convertAndSend(anyString(), anyString(),
-                anyString());
+        doThrow(new RuntimeException("Test exception")).when(amqpTemplate).convertAndSend(anyString(), anyString(), anyString());
 
         String timestamp = "2025-06-24T18:43:39Z";
         String service = "email-service";
@@ -60,9 +59,7 @@ class LogPublisherTest {
         Map<String, Object> details = Map.of("error", "details");
 
         // Act
-        assertThrows(RuntimeException.class, () -> {
-            logPublisher.sendLog(timestamp, service, level, message, details);
-        });
+        logPublisher.sendLog(timestamp, service, level, message, details);
 
         // Assert
         verify(amqpTemplate, times(1)).convertAndSend(eq("log.exchange"), eq("log.routingkey"), anyString());

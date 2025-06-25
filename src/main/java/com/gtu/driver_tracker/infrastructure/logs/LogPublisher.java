@@ -1,10 +1,13 @@
 package com.gtu.driver_tracker.infrastructure.logs;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.slf4j.Logger;
 
 import java.util.Map;
 @Component
@@ -19,6 +22,8 @@ public class LogPublisher {
     private String routingKey;
 
     private final ObjectMapper objectMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(LogPublisher.class);
 
     public LogPublisher(AmqpTemplate amqpTemplate) {
         this.amqpTemplate = amqpTemplate;
@@ -40,7 +45,7 @@ public class LogPublisher {
             amqpTemplate.convertAndSend(exchange, routingKey, logJson);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send log message", e);
+            logger.error("Failed to send log message", e);
         }
     }
 
