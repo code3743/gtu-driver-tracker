@@ -2,6 +2,8 @@ package com.gtu.driver_tracker.presentation.global;
 
 import com.gtu.driver_tracker.application.dto.ErrorResponseDTO;
 import com.gtu.driver_tracker.domain.exception.GeneralException;
+import com.gtu.driver_tracker.infrastructure.logs.LogPublisher;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,20 +14,22 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.util.Collections;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-
-
-
-
 
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler handler;
     private HttpServletRequest request;
+    private LogPublisher logPublisher;
 
     @BeforeEach
     void setUp() {
         handler = new GlobalExceptionHandler();
+        logPublisher = mock(LogPublisher.class);
+        handler.logPublisher = logPublisher;
         request = mock(HttpServletRequest.class);
         when(request.getRequestURI()).thenReturn("/test-uri");
     }
@@ -78,5 +82,16 @@ class GlobalExceptionHandlerTest {
         Map<?, ?> errors = (Map<?, ?>) body.getMessage();
         assertEquals("must not be null", errors.get("field1"));
         assertEquals("/test-uri", body.getPath());
+    }
+
+    @Test
+    void handleUnexpectedException_shouldLogAndReturnInternalServerError() {
+        Exception ex = new Exception("Unexpected error");
+
+        ResponseEntity<ErrorResponseDTO> response = handler.handleUnexpectedException(ex, request);
+
+        assertEquals(500, response.getStatusCode().value());
+        verify(logPublisher).sendLog(anyString(), eq("driver-tracker-service"), eq("ERROR"),
+                eq("Unexpected error occurred"), anyMap());
     }
 }

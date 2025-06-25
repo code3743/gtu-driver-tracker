@@ -1,5 +1,6 @@
 package com.gtu.driver_tracker.presentation.global;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,14 +10,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.gtu.driver_tracker.application.dto.ErrorResponseDTO;
 import com.gtu.driver_tracker.domain.exception.GeneralException;
+import com.gtu.driver_tracker.infrastructure.logs.LogPublisher;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @Autowired LogPublisher logPublisher;
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
@@ -56,4 +61,23 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleUnexpectedException(Exception ex, HttpServletRequest request) {
+        logPublisher.sendLog(
+            Instant.now().toString(),
+            "driver-tracker-service",
+            "ERROR",
+            "Unexpected error occurred",
+            Map.of("uri", request.getRequestURI(), "error", ex.getMessage(),"class", ex.getClass().getName(), "method", "handleUnexpectedException")
+        );
+        ErrorResponseDTO response = new ErrorResponseDTO(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "Internal Server Error",
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

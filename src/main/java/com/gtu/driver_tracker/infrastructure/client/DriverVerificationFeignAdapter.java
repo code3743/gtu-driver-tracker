@@ -26,7 +26,7 @@ public class DriverVerificationFeignAdapter implements DriverIdentityPort {
                 return new Driver(user.data().id(), user.data().name());
             }
         } catch (Exception e) {
-            log.info("Error fetching driver by ID: " + driverId);
+            log.info("Error fetching driver by ID: " + driverId);    
         }
         return null;
     }
